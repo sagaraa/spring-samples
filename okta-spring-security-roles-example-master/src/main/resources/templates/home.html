@@ -1,0 +1,23 @@
+<!doctype html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="fragments/head :: head"/> /*/-->
+</head>
+
+<body>
+<!-- Render the REST response here -->
+<div id="rest-response-container" class="row">
+    <div class="box col-md-10 col-md-offset-1">
+        <div class="okta-header">
+            <img width="300px" src="/images/OktaLogo.png"/>
+        </div>
+
+        <h3>Welcome!</h3>
+<!-- login -->
+<!-- "authorization-code/callback"  why???-->
+        <a href="/login" class="btn btn-success">Login</a>
+    </div>
+</div>
+</body>
+</html>

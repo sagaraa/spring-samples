@@ -1,0 +1,66 @@
+<!doctype html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="fragments/head :: head"/> /*/-->
+</head>
+
+<body>
+<!-- Render the login widget here -->
+<div id="okta-login-container"></div>
+
+<script th:inline="javascript">   
+    $( document ).ready(function() {
+        var data = {
+                logo: 'https://ok1static.oktacdn.com/assets/img/logos/okta-logo.png',
+                baseUrl: [[${appProperties.baseUrl}]],
+                clientId: [[${appProperties.clientId}]],
+                redirectUri: [[${appProperties.redirectUri}]],
+                userinfoUrl:[[${appProperties.discoveryUri}]],
+                authParams: {
+                    issuer: [[${appProperties.issuer}]],
+                    responseType: ['token']               
+                }
+            };
+        window.oktaSignIn = new OktaSignIn(data);
+        console.log(oktaSignIn);
+        var token = oktaSignIn.tokenManager.get('token');
+        if (token) {
+        	console.log(token);
+            window.location.href = "/authenticated";
+           
+        } else {
+        	console.log(data);
+            renderWidget();
+        }
+    });
+    
+    function renderWidget() {
+        new oktaSignIn.renderEl(
+            {el: '#okta-login-container'},
+            function (response) {
+            	console.log(response)
+                if (response.status === 'SUCCESS') {
+					console.log(oktaSignIn);
+                    oktaSignIn.tokenManager.add('token', response[0]);
+
+                    if (!document.location.protocol.startsWith('https')) {
+                        console.log(
+                            'WARNING: You are about to pass a bearer token in a cookie over an insecure\n' +
+                            'connection. This should *NEVER* be done in a production environment per\n' +
+                            'https://tools.ietf.org/html/rfc6750'
+                       );
+                    }
+                    document.cookie = 'access_token=' + oktaSignIn.tokenManager.get('token').accessToken;
+                   	console.log(document.cookie)
+                   document.location.href = "/authenticated";
+                }
+            },
+            function (err) {
+                console.log(err);
+            }
+        );
+    }    
+</script>
+</body>
+</html>
